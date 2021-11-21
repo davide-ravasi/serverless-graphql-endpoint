@@ -267,12 +267,15 @@ function createLambdaServer() {
     introspection: true,
     playground: true,
     context: async () => {
+      console.log(db);
       if (!db) {
         try {
           const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
           })
+
+          console.log(dbClient);
 
           if (!dbClient.isConnected()) await dbClient.connect()
           db = dbClient.db('next-graphql') // database name
@@ -290,15 +293,16 @@ function createLocalServer() {
   return new ApolloServer({
     typeDefs,
     resolvers,
-    introspection: true,
-    playground: true,
     context: async () => {
+      console.log(db);
       if (!db) {
         try {
           const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
           })
+
+          console.log(dbClient);
 
           if (!dbClient.isConnected()) await dbClient.connect()
           db = dbClient.db('next-graphql') // database name
@@ -309,6 +313,8 @@ function createLocalServer() {
 
       return { db }
     },
+    introspection: true,
+    playground: true,
   });
 }
 
