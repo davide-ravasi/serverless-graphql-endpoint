@@ -15,16 +15,6 @@ const typeDefs = gql`
     name: String
     url: String
   }
-  type User {
-    name: String
-    nickname: String
-    description: String
-    email: String
-    birth_date: String
-    address: String
-    instruments: [String]
-    avatar: Image
-  }
   # Bands
   type Band {
     id: ID
