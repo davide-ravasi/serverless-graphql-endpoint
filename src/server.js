@@ -258,6 +258,8 @@ const resolvers = {
   },
 };
 
+let db;
+
 function createLambdaServer() {
   return new ApolloServerLambda({
     typeDefs,
