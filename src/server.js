@@ -264,8 +264,6 @@ function createLambdaServer() {
   return new ApolloServerLambda({
     typeDefs,
     resolvers,
-    introspection: true,
-    playground: true,
     context: async () => {
       console.log(db);
       if (!db) {
@@ -286,6 +284,8 @@ function createLambdaServer() {
 
       return { db }
     },
+    introspection: true,
+    playground: true,
   });
 }
 
