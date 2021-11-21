@@ -2,6 +2,7 @@
 const ApolloServer = require('apollo-server').ApolloServer
 const ApolloServerLambda = require('apollo-server-lambda').ApolloServer
 const { gql } = require('apollo-server-lambda');
+const { MongoClient } = require('mongodb');
 
 const typeDefs = gql`
   type Genre {
@@ -122,7 +123,7 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-Query: {
+  Query: {
     getBands: async () => {
       try {
         const bands = await Band.find({})
@@ -152,7 +153,7 @@ Query: {
         console.log(err)
       }
     },
-  getUsers: async () => {
+    getUsers: async () => {
       try {
         const users = await User.find({})
 
@@ -257,21 +258,55 @@ Query: {
   },
 };
 
-function createLambdaServer () {
+function createLambdaServer() {
   return new ApolloServerLambda({
     typeDefs,
     resolvers,
     introspection: true,
     playground: true,
+    context: async () => {
+      if (!db) {
+        try {
+          const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          })
+
+          if (!dbClient.isConnected()) await dbClient.connect()
+          db = dbClient.db('next-graphql') // database name
+        } catch (e) {
+          console.log('--->error while connecting via graphql context (db)', e)
+        }
+      }
+
+      return { db }
+    },
   });
 }
 
-function createLocalServer () {
+function createLocalServer() {
   return new ApolloServer({
     typeDefs,
     resolvers,
     introspection: true,
     playground: true,
+    context: async () => {
+      if (!db) {
+        try {
+          const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          })
+
+          if (!dbClient.isConnected()) await dbClient.connect()
+          db = dbClient.db('next-graphql') // database name
+        } catch (e) {
+          console.log('--->error while connecting via graphql context (db)', e)
+        }
+      }
+
+      return { db }
+    },
   });
 }
 
