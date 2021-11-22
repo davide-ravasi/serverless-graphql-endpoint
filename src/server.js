@@ -316,4 +316,4 @@ function createLocalServer() {
   });
 }
 
-module.exports = { createLocalServer };
+module.exports = { createLambdaServer, createLocalServer };
