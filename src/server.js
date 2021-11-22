@@ -276,17 +276,16 @@ function createLambdaServer() {
     context: async () => {
       if (!db) {
         try {
-          const client = await MongoClient.connect(
-            "mongodb+srv://bearsteam09:wte1vzZ4cphfG5rE@cluster0.f9tex.mongodb.net/bandapp?retryWrites=true&w=majority"
-          );
-          db = await client.db("bandapp");
-          console.log(db);
+          const dbClient = await mongoose.connect(process.env.MONGODB_URI, {
+            useNewUrlParser: true,
+          });
         } catch (e) {
-          // handle any errors
-          console.log(e);
+          console.log(
+            "--->error while connecting with graphql context (db)",
+            e
+          );
         }
       }
-      return { db };
     },
     introspection: true,
     playground: true,
