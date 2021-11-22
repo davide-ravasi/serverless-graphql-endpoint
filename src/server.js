@@ -269,6 +269,30 @@ const resolvers = {
 
 let db;
 
+function createLambdaServer() {
+  return new ApolloServerLambda({
+    typeDefs,
+    resolvers,
+    context: async () => {
+      if (!db) {
+        try {
+          const client = await MongoClient.connect(
+            "mongodb+srv://bearsteam09:wte1vzZ4cphfG5rE@cluster0.f9tex.mongodb.net/bandapp?retryWrites=true&w=majority"
+          );
+          db = await client.db("bandapp");
+          console.log(db);
+        } catch (e) {
+          // handle any errors
+          console.log(e);
+        }
+      }
+      return { db };
+    },
+    introspection: true,
+    playground: true,
+  });
+}
+
 function createLocalServer() {
   return new ApolloServer({
     typeDefs,
