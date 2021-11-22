@@ -1,8 +1,10 @@
-
-const ApolloServer = require('apollo-server').ApolloServer
-const ApolloServerLambda = require('apollo-server-lambda').ApolloServer
-const { gql } = require('apollo-server-lambda');
-const { MongoClient } = require('mongodb');
+const ApolloServer = require("apollo-server").ApolloServer;
+const ApolloServerLambda = require("apollo-server-lambda").ApolloServer;
+const { gql } = require("apollo-server-lambda");
+const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
+const { Band } = require("./band");
+const { User } = require("./user");
 
 const typeDefs = gql`
   type Genre {
@@ -126,60 +128,67 @@ const resolvers = {
   Query: {
     getBands: async () => {
       try {
-        const bands = await Band.find({})
+        const bands = await Band.find({});
 
-        return bands
+        return bands;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     getBand: async (_, { id }) => {
-      const band = await Band.findById(id)
+      const band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
-      return band
+      return band;
     },
     getBandsByContent: async (_, { text }) => {
       try {
-        const bands = await Band.find({})
+        const bands = await Band.find({});
 
-        const filterBands = bands.filter(band => band.name.includes(text) || band.description.includes(text));
+        const filterBands = bands.filter(
+          (band) => band.name.includes(text) || band.description.includes(text)
+        );
 
-        return filterBands
+        return filterBands;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     getUsers: async () => {
       try {
-        const users = await User.find({})
+        const users = await User.find({});
 
-        return users
+        return users;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     getUser: async (_, { id }) => {
-      const user = await User.findById(id)
+      const user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
-      return user
+      return user;
     },
     getUserByContent: async (_, { text }) => {
       try {
-        const users = await User.find({})
+        const users = await User.find({});
 
-        const filterUsers = users.filter(user => user.name.includes(text) || user.description.includes(text) || user.nickname.includes(text));
+        const filterUsers = users.filter(
+          (user) =>
+            user.name.includes(text) ||
+            user.description.includes(text) ||
+            user.nickname.includes(text)
+        );
 
-        return filterUsers
+        return filterUsers;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
   },
@@ -187,135 +196,100 @@ const resolvers = {
   Mutation: {
     newBand: async (_, { input }) => {
       try {
-        const band = new Band(input)
+        const band = new Band(input);
 
-        const result = await band.save()
+        const result = await band.save();
 
-        return result
+        return result;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     updateBand: async (_, { id, input }) => {
-      let band = await Band.findById(id)
+      let band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
       band = await Band.findOneAndUpdate({ _id: id }, input, {
         new: true,
-      })
+      });
 
-      return band
+      return band;
     },
     deleteBand: async (_, { id }) => {
-      const band = await Band.findById(id)
+      const band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
-      await Band.findOneAndDelete({ _id: id })
+      await Band.findOneAndDelete({ _id: id });
 
-      return 'Band removed'
+      return "Band removed";
     },
     newUser: async (_, { input }) => {
       try {
-        const user = new User(input)
+        const user = new User(input);
 
-        const result = await user.save()
+        const result = await user.save();
 
-        return result
+        return result;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     updateUser: async (_, { id, input }) => {
-      let user = await User.findById(id)
+      let user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
       user = await User.findOneAndUpdate({ _id: id }, input, {
         new: true,
-      })
+      });
 
-      return user
+      return user;
     },
     deleteUser: async (_, { id }) => {
-      const user = await User.findById(id)
+      const user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
-      await User.findOneAndDelete({ _id: id })
+      await User.findOneAndDelete({ _id: id });
 
-      return 'User removed'
+      return "User removed";
     },
   },
 };
 
 let db;
 
-function createLambdaServer() {
-  return new ApolloServerLambda({
-    typeDefs,
-    resolvers,
-    context: async () => {
-      console.log(db);
-      if (!db) {
-        try {
-          const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-          })
-
-          console.log(dbClient);
-
-          if (!dbClient.isConnected()) await dbClient.connect()
-          db = dbClient.db('next-graphql') // database name
-        } catch (e) {
-          console.log('--->error while connecting via graphql context (db)', e)
-        }
-      }
-
-      return { db }
-    },
-    introspection: true,
-    playground: true,
-  });
-}
-
 function createLocalServer() {
   return new ApolloServer({
     typeDefs,
     resolvers,
     context: async () => {
-      console.log(db);
       if (!db) {
         try {
-          const dbClient = new MongoClient(process.env.MONGO_DB_URI, {
+          const dbClient = await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-          })
-
-          console.log(dbClient);
-
-          if (!dbClient.isConnected()) await dbClient.connect()
-          db = dbClient.db('next-graphql') // database name
+          });
         } catch (e) {
-          console.log('--->error while connecting via graphql context (db)', e)
+          console.log(
+            "--->error while connecting with graphql context (db)",
+            e
+          );
         }
       }
-
-      return { db }
     },
     introspection: true,
     playground: true,
   });
 }
 
-module.exports = { createLambdaServer, createLocalServer }
+module.exports = { createLocalServer };

@@ -1,8 +1,9 @@
-
-const { createLocalServer } = require("./server")
+const { createLocalServer } = require("./server");
 
 const server = createLocalServer();
 
-server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`);
+server.listen().then((results) => {
+  console.log(results);
+
+  console.log(`🚀 Server ready at ${results.url}`);
 });
