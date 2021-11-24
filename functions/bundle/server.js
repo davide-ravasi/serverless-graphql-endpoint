@@ -169,7 +169,7 @@ Query: {
       try {
         const bands = await Band.find({})
 
-        const filterBands = bands.filter(band => band.name.includes(text) || band.description.includes(text));
+        const filterBands = bands.filter(band => band.name?.includes(text) || band.description?.includes(text));
 
         return filterBands
       } catch (err) {
@@ -198,7 +198,7 @@ Query: {
       try {
         const users = await User.find({})
 
-        const filterUsers = users.filter(user => user.name.includes(text) || user.description.includes(text) || user.nickname.includes(text));
+        const filterUsers = users.filter(user => user.name?.includes(text) || user.description?.includes(text) || user.nickname?.includes(text));
 
         return filterUsers
       } catch (err) {
