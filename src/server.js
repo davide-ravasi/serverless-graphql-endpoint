@@ -149,7 +149,7 @@ const resolvers = {
         const bands = await Band.find({});
 
         const filterBands = bands.filter(
-          (band) => band.name.includes(text) || band.description.includes(text)
+          (band) => (band.name && band.name.includes(text)) || (band.description && band.description.includes(text))
         );
 
         return filterBands;
@@ -181,9 +181,9 @@ const resolvers = {
 
         const filterUsers = users.filter(
           (user) =>
-            user.name.includes(text) ||
-            user.description.includes(text) ||
-            user.nickname.includes(text)
+            (user.name && user.name.includes(text)) ||
+            (user.description && user.description.includes(text)) ||
+            (user.nickname && user.nickname.includes(text))
         );
 
         return filterUsers;
