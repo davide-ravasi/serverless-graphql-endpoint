@@ -50,6 +50,7 @@ const typeDefs = gql`
     email: String
     birth_date: String
     address: String
+    genres: [GenreInput]
     instruments: [String]
     avatar: ImageInput
   }
@@ -84,6 +85,7 @@ const typeDefs = gql`
     email: String
     birth_date: String
     address: String
+    genres: [Genre]
     instruments: [String]
     avatar: Image
   }
@@ -94,6 +96,7 @@ const typeDefs = gql`
     email: String
     birth_date: String
     address: String
+    genres: [GenreInput]
     avatar: ImageInput
   }
   input UserUpdateInput {
@@ -103,6 +106,7 @@ const typeDefs = gql`
     email: String
     birth_date: String
     address: String
+    genres: [GenreInput]
     instruments: [String]
     avatar: ImageInput
   }
@@ -149,7 +153,9 @@ const resolvers = {
         const bands = await Band.find({});
 
         const filterBands = bands.filter(
-          (band) => (band.name && band.name.includes(text)) || (band.description && band.description.includes(text))
+          (band) =>
+            (band.name && band.name.includes(text)) ||
+            (band.description && band.description.includes(text))
         );
 
         return filterBands;

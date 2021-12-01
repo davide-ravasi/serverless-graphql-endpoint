@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { createLocalServer } = require("./server");
 
 const server = createLocalServer();
