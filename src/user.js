@@ -18,6 +18,11 @@ const UsersSchema = new Schema(
     email: {
       type: String,
     },
+    genres: [
+      {
+        name: { type: String },
+      },
+    ],
     birth_date: {
       type: Date,
     },
