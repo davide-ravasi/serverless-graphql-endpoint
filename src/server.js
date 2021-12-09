@@ -113,10 +113,10 @@ const typeDefs = gql`
   type Query {
     getBands: [Band]
     getBand(id: ID!): Band
-    getBandsByContent(text: String): [Band]
+    getBandsFromSearch(text: String, type: String): [Band]
     getUsers: [User]
     getUser(id: ID!): User
-    getUserByContent(text: String): [User]
+    getUsersFromSearch(text: String, type: String): [User]
   }
   type Mutation {
     newBand(input: BandCreateInput): Band
@@ -148,15 +148,29 @@ const resolvers = {
 
       return band;
     },
-    getBandsByContent: async (_, { text }) => {
+    getBandsFromSearch: async (_, { text, type }) => {
       try {
         const bands = await Band.find({});
+        let filterBands = [];
 
-        const filterBands = bands.filter(
-          (band) =>
-            (band.name && band.name.includes(text)) ||
-            (band.description && band.description.includes(text))
-        );
+        if (type === "content") {
+          filterBands = bands.filter(
+            (band) =>
+              (band.name && band.name.includes(text)) ||
+              (band.description && band.description.includes(text))
+          );
+        }
+
+        if (type === "genre") {
+          filterBands = bands.filter((band) => {
+            if (band.genres) {
+              let plainArray = band.genres.map((el) => el.name);
+              return plainArray.includes(text);
+            }
+
+            return false;
+          });
+        }
 
         return filterBands;
       } catch (err) {
@@ -181,16 +195,30 @@ const resolvers = {
 
       return user;
     },
-    getUserByContent: async (_, { text }) => {
+    getUsersFromSearch: async (_, { text, type }) => {
       try {
         const users = await User.find({});
+        let filterUsers = [];
 
-        const filterUsers = users.filter(
-          (user) =>
-            (user.name && user.name.includes(text)) ||
-            (user.description && user.description.includes(text)) ||
-            (user.nickname && user.nickname.includes(text))
-        );
+        if (type === "content") {
+          filterUsers = users.filter(
+            (user) =>
+              (user.name && user.name.includes(text)) ||
+              (user.description && user.description.includes(text)) ||
+              (user.nickname && user.nickname.includes(text))
+          );
+        }
+
+        if (type === "genre") {
+          filterUsers = users.filter((user) => {
+            if (user.genres) {
+              let plainArray = user.genres.map((el) => el.name);
+              return plainArray.includes(text);
+            }
+
+            return false;
+          });
+        }
 
         return filterUsers;
       } catch (err) {

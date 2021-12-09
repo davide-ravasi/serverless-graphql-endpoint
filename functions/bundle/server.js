@@ -1,7 +1,6 @@
-
-const ApolloServer = require('apollo-server').ApolloServer
-const ApolloServerLambda = require('apollo-server-lambda').ApolloServer
-const { gql } = require('apollo-server-lambda');
+const ApolloServer = require("apollo-server").ApolloServer;
+const ApolloServerLambda = require("apollo-server-lambda").ApolloServer;
+const { gql } = require("apollo-server-lambda");
 
 const typeDefs = gql`
   type Genre {
@@ -129,10 +128,10 @@ const typeDefs = gql`
   type Query {
     getBands: [Band]
     getBand(id: ID!): Band
-    getBandsByContent(text: String): [Band]
+    getBandsFromSearch(text: String, type: String): [Band]
     getUsers: [User]
     getUser(id: ID!): User
-    getUserByContent(text: String): [User]
+    getUsersFromSearch(text: String, type: String): [User]
   }
 
   type Mutation {
@@ -146,63 +145,77 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-Query: {
+  Query: {
     getBands: async () => {
       try {
-        const bands = await Band.find({})
+        const bands = await Band.find({});
 
-        return bands
+        return bands;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     getBand: async (_, { id }) => {
-      const band = await Band.findById(id)
+      const band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
-      return band
+      return band;
     },
-    getBandsByContent: async (_, { text }) => {
+    getBandsFromSearch: async (_, { text, type }) => {
       try {
-        const bands = await Band.find({})
+        const bands = await Band.find({});
+        let filterBands = [];
+        if (type === "content") {
+          filterBands = bands.filter(
+            (band) =>
+              band.name?.includes(text) || band.description?.includes(text)
+          );
+        }
 
-        const filterBands = bands.filter(band => band.name?.includes(text) || band.description?.includes(text));
+        if (type === "genre") {
+          filterBands = bands.filter((band) => band.genres?.includes(text));
+        }
 
-        return filterBands
+        return filterBands;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
-  getUsers: async () => {
+    getUsers: async () => {
       try {
-        const users = await User.find({})
+        const users = await User.find({});
 
-        return users
+        return users;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     getUser: async (_, { id }) => {
-      const user = await User.findById(id)
+      const user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
-      return user
+      return user;
     },
-    getUserByContent: async (_, { text }) => {
+    getUsersFromSearch: async (_, { text, type }) => {
       try {
-        const users = await User.find({})
+        const users = await User.find({});
 
-        const filterUsers = users.filter(user => user.name?.includes(text) || user.description?.includes(text) || user.nickname?.includes(text));
+        const filterUsers = users.filter(
+          (user) =>
+            user.name?.includes(text) ||
+            user.description?.includes(text) ||
+            user.nickname?.includes(text)
+        );
 
-        return filterUsers
+        return filterUsers;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
   },
@@ -210,78 +223,78 @@ Query: {
   Mutation: {
     newBand: async (_, { input }) => {
       try {
-        const band = new Band(input)
+        const band = new Band(input);
 
-        const result = await band.save()
+        const result = await band.save();
 
-        return result
+        return result;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     updateBand: async (_, { id, input }) => {
-      let band = await Band.findById(id)
+      let band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
       band = await Band.findOneAndUpdate({ _id: id }, input, {
         new: true,
-      })
+      });
 
-      return band
+      return band;
     },
     deleteBand: async (_, { id }) => {
-      const band = await Band.findById(id)
+      const band = await Band.findById(id);
 
       if (!band) {
-        throw new Error('Band not found')
+        throw new Error("Band not found");
       }
 
-      await Band.findOneAndDelete({ _id: id })
+      await Band.findOneAndDelete({ _id: id });
 
-      return 'Band removed'
+      return "Band removed";
     },
     newUser: async (_, { input }) => {
       try {
-        const user = new User(input)
+        const user = new User(input);
 
-        const result = await user.save()
+        const result = await user.save();
 
-        return result
+        return result;
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     },
     updateUser: async (_, { id, input }) => {
-      let user = await User.findById(id)
+      let user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
       user = await User.findOneAndUpdate({ _id: id }, input, {
         new: true,
-      })
+      });
 
-      return user
+      return user;
     },
     deleteUser: async (_, { id }) => {
-      const user = await User.findById(id)
+      const user = await User.findById(id);
 
       if (!user) {
-        throw new Error('User not found')
+        throw new Error("User not found");
       }
 
-      await User.findOneAndDelete({ _id: id })
+      await User.findOneAndDelete({ _id: id });
 
-      return 'User removed'
+      return "User removed";
     },
   },
 };
 
-function createLambdaServer () {
+function createLambdaServer() {
   return new ApolloServerLambda({
     typeDefs,
     resolvers,
@@ -290,7 +303,7 @@ function createLambdaServer () {
   });
 }
 
-function createLocalServer () {
+function createLocalServer() {
   return new ApolloServer({
     typeDefs,
     resolvers,
@@ -299,4 +312,4 @@ function createLocalServer () {
   });
 }
 
-module.exports = { createLambdaServer, createLocalServer }
+module.exports = { createLambdaServer, createLocalServer };
