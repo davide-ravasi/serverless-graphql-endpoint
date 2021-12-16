@@ -10,6 +10,9 @@ const typeDefs = gql`
   type Genre {
     name: String
   }
+  type Instruments {
+    name: String
+  }
   type Video {
     title: String
     url: String
@@ -35,6 +38,9 @@ const typeDefs = gql`
   input GenreInput {
     name: String
   }
+  input InstrumentsInput {
+    name: String
+  }
   input VideoInput {
     title: String
     url: String
@@ -51,7 +57,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
-    instruments: [String]
+    instruments: [InstrumentsInput]
     avatar: ImageInput
   }
   input BandCreateInput {
@@ -86,7 +92,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [Genre]
-    instruments: [String]
+    instruments: [Instruments]
     avatar: Image
   }
   input UserCreateInput {
@@ -97,6 +103,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
+    instruments: [InstrumentsInput]
     avatar: ImageInput
   }
   input UserUpdateInput {
@@ -107,7 +114,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
-    instruments: [String]
+    instruments: [InstrumentsInput]
     avatar: ImageInput
   }
   type Query {
