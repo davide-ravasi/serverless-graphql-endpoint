@@ -10,6 +10,9 @@ const typeDefs = gql`
   type Genre {
     name: String
   }
+  type Role {
+    name: String
+  }
   type Instruments {
     name: String
   }
@@ -30,12 +33,16 @@ const typeDefs = gql`
     email: String
     foundation_date: String
     genres: [Genre]
+    searching: [Role]
     videos: [Video]
     images: [Image]
     avatar: Image
     members: [User]
   }
   input GenreInput {
+    name: String
+  }
+  input RoleInput {
     name: String
   }
   input InstrumentsInput {
@@ -67,6 +74,7 @@ const typeDefs = gql`
     foundation_date: String
     email: String
     genres: [GenreInput]
+    searching: [RoleInput]
     videos: [VideoInput]
     images: [ImageInput]
     avatar: ImageInput
@@ -78,6 +86,7 @@ const typeDefs = gql`
     foundation_date: String
     email: String
     genres: [GenreInput]
+    searching: [RoleInput]
     videos: [VideoInput]
     images: [ImageInput]
     avatar: ImageInput

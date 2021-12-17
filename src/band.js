@@ -43,6 +43,11 @@ const BandsSchema = new Schema(
       name: { type: String },
       url: { type: String },
     },
+    searching: [
+      {
+        name: { type: String },
+      },
+    ],
     members: [UsersSchema],
   },
   { timestamps: true }
