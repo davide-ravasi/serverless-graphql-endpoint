@@ -166,25 +166,20 @@ const resolvers = {
     },
     getBandsFromSearch: async (_, { text, type }) => {
       try {
-        const bands = await Band.find({});
         let filterBands = [];
 
         if (type === "content") {
-          filterBands = bands.filter(
-            (band) =>
-              (band.name && band.name.includes(text)) ||
-              (band.description && band.description.includes(text))
-          );
+          filterBands = await Band.find({
+            $or: [
+              { description: { $regex: text } },
+              { name: { $regex: text } },
+            ],
+          });
         }
 
         if (type === "genre") {
-          filterBands = bands.filter((band) => {
-            if (band.genres) {
-              let plainArray = band.genres.map((el) => el.name);
-              return plainArray.includes(text);
-            }
-
-            return false;
+          filterBands = await Band.find({
+            genres: { $elemMatch: { name: text } },
           });
         }
 
@@ -193,6 +188,35 @@ const resolvers = {
         console.log(err);
       }
     },
+    // getBandsFromSearch: async (_, { text, type }) => {
+    //   try {
+    //     const bands = await Band.find({});
+    //     let filterBands = [];
+
+    //     if (type === "content") {
+    //       filterBands = bands.filter(
+    //         (band) =>
+    //           (band.name && band.name.includes(text)) ||
+    //           (band.description && band.description.includes(text))
+    //       );
+    //     }
+
+    //     if (type === "genre") {
+    //       filterBands = bands.filter((band) => {
+    //         if (band.genres) {
+    //           let plainArray = band.genres.map((el) => el.name);
+    //           return plainArray.includes(text);
+    //         }
+
+    //         return false;
+    //       });
+    //     }
+
+    //     return filterBands;
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // },
     getUsers: async () => {
       try {
         const users = await User.find({});
@@ -213,26 +237,21 @@ const resolvers = {
     },
     getUsersFromSearch: async (_, { text, type }) => {
       try {
-        const users = await User.find({});
         let filterUsers = [];
 
         if (type === "content") {
-          filterUsers = users.filter(
-            (user) =>
-              (user.name && user.name.includes(text)) ||
-              (user.description && user.description.includes(text)) ||
-              (user.nickname && user.nickname.includes(text))
-          );
+          filterUsers = await User.find({
+            $or: [
+              { description: { $regex: text } },
+              { name: { $regex: text } },
+              { nickname: { $regex: text } },
+            ],
+          });
         }
 
         if (type === "genre") {
-          filterUsers = users.filter((user) => {
-            if (user.genres) {
-              let plainArray = user.genres.map((el) => el.name);
-              return plainArray.includes(text);
-            }
-
-            return false;
+          filterUsers = await User.find({
+            genres: { $elemMatch: { name: text } },
           });
         }
 
@@ -242,6 +261,37 @@ const resolvers = {
       }
     },
   },
+  //   getUsersFromSearch: async (_, { text, type }) => {
+  //     try {
+  //       const users = await User.find({});
+  //       let filterUsers = [];
+
+  //       if (type === "content") {
+  //         filterUsers = users.filter(
+  //           (user) =>
+  //             (user.name && user.name.includes(text)) ||
+  //             (user.description && user.description.includes(text)) ||
+  //             (user.nickname && user.nickname.includes(text))
+  //         );
+  //       }
+
+  //       if (type === "genre") {
+  //         filterUsers = users.filter((user) => {
+  //           if (user.genres) {
+  //             let plainArray = user.genres.map((el) => el.name);
+  //             return plainArray.includes(text);
+  //           }
+
+  //           return false;
+  //         });
+  //       }
+
+  //       return filterUsers;
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   },
+  // },
 
   Mutation: {
     newBand: async (_, { input }) => {
