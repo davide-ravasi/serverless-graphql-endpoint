@@ -183,6 +183,12 @@ const resolvers = {
           });
         }
 
+        if (type === "searching") {
+          filterBands = await Band.find({
+            searching: { $elemMatch: { name: text } },
+          });
+        }
+
         return filterBands;
       } catch (err) {
         console.log(err);
@@ -252,6 +258,12 @@ const resolvers = {
         if (type === "genre") {
           filterUsers = await User.find({
             genres: { $elemMatch: { name: text } },
+          });
+        }
+
+        if (type === "instruments") {
+          filterUsers = await User.find({
+            instruments: { $elemMatch: { name: text } },
           });
         }
 
