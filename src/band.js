@@ -48,7 +48,12 @@ const BandsSchema = new Schema(
         name: { type: String },
       },
     ],
-    members: [UsersSchema],
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

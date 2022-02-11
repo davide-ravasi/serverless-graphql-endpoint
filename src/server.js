@@ -156,7 +156,7 @@ const resolvers = {
       }
     },
     getBand: async (_, { id }) => {
-      const band = await Band.findById(id);
+      const band = await Band.findById(id).populate("members");
 
       if (!band) {
         throw new Error("Band not found");
