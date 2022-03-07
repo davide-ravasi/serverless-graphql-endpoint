@@ -178,14 +178,16 @@ const resolvers = {
         }
 
         if (type === "genre") {
+          const genres = text.split(",");
           filterBands = await Band.find({
-            genres: { $elemMatch: { name: text } },
+            genres: { $elemMatch: { name: { $in: genres } } },
           });
         }
 
         if (type === "searching") {
+          const musicians = text.split(",");
           filterBands = await Band.find({
-            searching: { $elemMatch: { name: text } },
+            searching: { $elemMatch: { name: { $in: musicians } } },
           });
         }
 
@@ -256,14 +258,22 @@ const resolvers = {
         }
 
         if (type === "genre") {
+          const genres = text.split(",");
           filterUsers = await User.find({
-            genres: { $elemMatch: { name: text } },
+            genres: { $elemMatch: { name: { $in: genres } } },
           });
+
+          /*
+          {
+            genres: { $in: text.split(",") },
+          }
+          */
         }
 
         if (type === "instruments") {
+          const instruments = text.split(",");
           filterUsers = await User.find({
-            instruments: { $elemMatch: { name: text } },
+            instruments: { $elemMatch: { name: { $in: instruments } } },
           });
         }
 
