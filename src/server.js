@@ -4,16 +4,26 @@ const { gql } = require("apollo-server-lambda");
 const { MongoClient } = require("mongodb");
 const mongoose = require("mongoose");
 const { Band } = require("./band");
+const { Genre } = require("./genre");
+const { Instrument } = require("./instrument");
+const { Role } = require("./role");
 const { User } = require("./user");
 
 const typeDefs = gql`
+  type ListType {
+    id: ID
+    name: String
+  }
   type Genre {
+    id: ID
     name: String
   }
   type Role {
+    id: ID
     name: String
   }
-  type Instruments {
+  type Instrument {
+    id: ID
     name: String
   }
   type Video {
@@ -45,7 +55,7 @@ const typeDefs = gql`
   input RoleInput {
     name: String
   }
-  input InstrumentsInput {
+  input InstrumentInput {
     name: String
   }
   input VideoInput {
@@ -64,7 +74,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
-    instruments: [InstrumentsInput]
+    instruments: [InstrumentInput]
     avatar: ImageInput
   }
   input BandCreateInput {
@@ -101,7 +111,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [Genre]
-    instruments: [Instruments]
+    instruments: [Instrument]
     avatar: Image
   }
   input UserCreateInput {
@@ -112,7 +122,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
-    instruments: [InstrumentsInput]
+    instruments: [InstrumentInput]
     avatar: ImageInput
   }
   input UserUpdateInput {
@@ -123,7 +133,7 @@ const typeDefs = gql`
     birth_date: String
     address: String
     genres: [GenreInput]
-    instruments: [InstrumentsInput]
+    instruments: [InstrumentInput]
     avatar: ImageInput
   }
   type Query {
@@ -133,6 +143,7 @@ const typeDefs = gql`
     getUsers: [User]
     getUser(id: ID!): User
     getUsersFromSearch(text: String, type: String): [User]
+    getList(what: String): [ListType]
   }
   type Mutation {
     newBand(input: BandCreateInput): Band
@@ -278,6 +289,29 @@ const resolvers = {
         }
 
         return filterUsers;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    getList: async (_, { what }) => {
+      try {
+        let list;
+
+        if (what === "genres") {
+          list = await Genre.find();
+        }
+
+        if (what === "instruments") {
+          list = await Instrument.find();
+        }
+
+        if (what === "roles") {
+          list = await Role.find();
+        }
+
+        console.log(list);
+
+        return list;
       } catch (err) {
         console.log(err);
       }
