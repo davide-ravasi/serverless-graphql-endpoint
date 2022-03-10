@@ -297,7 +297,7 @@ const resolvers = {
       try {
         let list;
 
-        if (what === "genres") {
+        if (what === "genre") {
           list = await Genre.find();
         }
 
@@ -305,7 +305,7 @@ const resolvers = {
           list = await Instrument.find();
         }
 
-        if (what === "roles") {
+        if (what === "searching") {
           list = await Role.find();
         }
 
